@@ -1,0 +1,41 @@
+services: # Define os serviços que serão executados pelo Docker Compose
+
+  app: # Serviço responsável por executar a aplicação PHP
+    build: . # Constrói a imagem da aplicação usando o Dockerfile do projeto
+    container_name: crud-php-app # Define um nome fixo para o container da aplicação
+
+    ports: # Define as portas utilizadas para acessar a aplicação
+      - "8080:80" # Mapeia a porta 80 do container para a porta 8080 do computador
+
+    volumes: # Define os diretórios compartilhados entre o computador e o container
+      - ./src:/var/www/html # Compartilha a pasta src com a pasta padrão do Apache
+
+    environment: # Define as variáveis de ambiente utilizadas pela aplicação PHP
+      DB_HOST: db # Define o nome do serviço do banco de dados
+      DB_USER: root # Define o usuário utilizado para acessar o banco
+      DB_PASSWORD: root # Define a senha utilizada para acessar o banco
+      DB_NAME: crud # Define o nome do banco de dados utilizado pela aplicação
+
+    networks: # Define as redes às quais o container da aplicação pertence
+      - minha-rede # Conecta a aplicação à rede personalizada
+
+  db: # Serviço responsável pelo banco de dados MySQL
+    image: mysql:8.0 # Utiliza a imagem oficial do MySQL versão 8.0
+    container_name: crud-mysql-db # Define um nome fixo para o container do banco
+
+    environment: # Define as configurações iniciais do banco de dados
+      MYSQL_ROOT_PASSWORD: root # Define a senha do usuário root do MySQL
+      MYSQL_DATABASE: crud # Cria automaticamente o banco de dados chamado crud
+
+    volumes: # Define os volumes utilizados pelo banco de dados
+      - db_data:/var/lib/mysql # Mantém os dados do MySQL persistentes mesmo após reiniciar os containers
+
+    networks: # Define as redes às quais o container do banco pertence
+      - minha-rede # Conecta o banco à mesma rede da aplicação
+
+volumes: # Define os volumes persistentes utilizados pelo Docker
+  db_data: # Cria o volume responsável por armazenar os dados do MySQL
+
+networks: # Define as redes personalizadas do projeto
+  minha-rede: # Cria uma rede personalizada para comunicação entre os serviços
+    driver: bridge # Utiliza o driver bridge para permitir a comunicação entre os containers

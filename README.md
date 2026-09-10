@@ -399,8 +399,8 @@ docker compose up -d
 # Autor
 
 **Gabriel dos Santos Leonardo**
-
-Trabalho realizado individualmente.
+**Yuri Cavessa**
+**Ricardo Mantovi**
 
 ---
 

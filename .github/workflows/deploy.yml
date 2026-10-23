@@ -1,0 +1,22 @@
+
+name: Atualizar CRUD no Ubuntu
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Atualizar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Reconstruir e atualizar o CRUD
+        run: |
+          cd /home/usuario/crud-php-docker
+          git pull origin main
+          sudo docker compose up -d --build

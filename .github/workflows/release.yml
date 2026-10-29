@@ -16,11 +16,16 @@ jobs:
       - name: Baixar repositorio
         uses: actions/checkout@v4
 
+      - name: Instalar ZIP
+        run: sudo apt-get install -y zip
+
       - name: Criar arquivo ZIP
         run: |
           zip -r projeto-${GITHUB_REF_NAME}.zip . \
             -x ".git/*" \
                ".github/*" \
+               ".env" \
+               ".env.*" \
                "projeto-*.zip"
 
       - name: Publicar Release
@@ -30,4 +35,6 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             "projeto-${GITHUB_REF_NAME}.zip" \
             --title "Versao $GITHUB_REF_NAME" \
-            --generate-notes
+            --generate-notes \
+            --latest
+

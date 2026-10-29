@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Baixar codigo do GitHub
@@ -21,3 +21,4 @@ jobs:
       - name: Atualizar aplicacao Docker
         run: |
           docker compose -p crud-php-docker up -d --build
+          docker compose -p crud-php-docker ps

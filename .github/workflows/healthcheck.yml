@@ -17,20 +17,21 @@ jobs:
       - name: Baixar código do GitHub
         uses: actions/checkout@v4
 
+      # 🔴 ETAPA ADICIONADA: Subir os containers antes de testar
+      - name: Subir aplicação para o teste
+        run: docker compose -p crud-php-docker up -d --build
+
       - name: Executar Healthcheck da Aplicação
         run: |
           echo "🔍 Iniciando verificação de saúde (Healthcheck)..."
 
-          # Configurações do teste
           MAX_TENTATIVAS=12
           INTERVALO=5
-          PORTA=80 # Altere para a porta em que o seu PHP está exposto (ex: 80, 8080)
+          PORTA=80 # Altere para a porta exposta no seu docker-compose.yml se for diferente (ex: 8080)
 
           for i in $(seq 1 $MAX_TENTATIVAS); do
-            # Tenta fazer uma requisição HTTP para a aplicação no localhost
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORTA || true)
 
-            # Considera sucesso se responder HTTP 200 (OK) ou 302 (Redirecionamento)
             if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
               echo "✅ Sucesso! Aplicação online respondendo com HTTP $HTTP_STATUS."
               exit 0

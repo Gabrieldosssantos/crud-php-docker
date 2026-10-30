@@ -1,0 +1,46 @@
+name: Healthcheck da Aplicação
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código do GitHub
+        uses: actions/checkout@v4
+
+      - name: Executar Healthcheck da Aplicação
+        run: |
+          echo "🔍 Iniciando verificação de saúde (Healthcheck)..."
+
+          # Configurações do teste
+          MAX_TENTATIVAS=12
+          INTERVALO=5
+          PORTA=80 # Altere para a porta em que o seu PHP está exposto (ex: 80, 8080)
+
+          for i in $(seq 1 $MAX_TENTATIVAS); do
+            # Tenta fazer uma requisição HTTP para a aplicação no localhost
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORTA || true)
+
+            # Considera sucesso se responder HTTP 200 (OK) ou 302 (Redirecionamento)
+            if [ "$HTTP_STATUS" -eq 200 ] || [ "$HTTP_STATUS" -eq 302 ]; then
+              echo "✅ Sucesso! Aplicação online respondendo com HTTP $HTTP_STATUS."
+              exit 0
+            fi
+
+            echo "⏳ Tentativa $i/$MAX_TENTATIVAS: Aplicação ainda não respondeu (Status: $HTTP_STATUS). Aguardando ${INTERVALO}s..."
+            sleep $INTERVALO
+          done
+
+          echo "❌ FALHA: A aplicação não respondeu após $MAX_TENTATIVAS tentativas."
+          echo "📋 Exibindo logs dos containers para diagnóstico:"
+          docker compose -p crud-php-docker logs --tail=50
+          exit 1

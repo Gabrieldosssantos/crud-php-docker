@@ -27,7 +27,7 @@ jobs:
 
           MAX_TENTATIVAS=12
           INTERVALO=5
-          PORTA=80 # Altere para a porta exposta no seu docker-compose.yml se for diferente (ex: 8080)
+          PORTA=8080 # Altere para a porta exposta no seu docker-compose.yml se for diferente (ex: 8080)
 
           for i in $(seq 1 $MAX_TENTATIVAS); do
             HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:$PORTA || true)
